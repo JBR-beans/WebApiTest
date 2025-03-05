@@ -3,6 +3,7 @@ import { DataService, Post } from '../data.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-post-edit',
@@ -27,6 +28,7 @@ export class PostEditComponent implements OnInit {
       }
   }
   isLoaded: boolean = false;
+  isEditing: boolean = false;
 
   postForm: FormGroup = new FormGroup({});
 
@@ -35,6 +37,7 @@ export class PostEditComponent implements OnInit {
     private router: Router,
     private fb: FormBuilder,
   ) {
+
     this.initForm();
 
   }
@@ -60,14 +63,49 @@ export class PostEditComponent implements OnInit {
     // get our id
     this.route.paramMap.pipe(
       switchMap(params => {
-        this.id = Number(params.get("id"));
-        return this.data.getPostById(this.id);
+        //console.log(params)
+        //if (params.get("id") == "create") {
+        //  console.log("hit")
+        //  // we are creating
+        //  return of({
+        //    contentId: 0,
+        //    title: "",
+        //    body: "",
+        //    createdAt: new Date(),
+        //    updatedAt: new Date(),
+        //    visibility: 0,
+        //    categoryId: 0,
+        //    category: {
+        //      categoryId: 0,
+        //      categoryName: "",
+        //      postedContent: []
+        //    }
+        //  });
+        //} else {
+          this.id = Number(params.get("id"));
+          this.isEditing = true;
+          return this.data.getPostById(this.id);
+/*        }*/
       })
     ).subscribe(result => {
       console.log(result);
       this.isLoaded = true;
       this.post = result;
+      this.loadForm();
     })
+  }
+
+  loadForm() {
+    this.postForm.patchValue({
+      contentId: this.post.contentId,
+      title: this.post.title,
+      body: this.post.body,
+      createdAt: this.post.createdAt,
+      updatedAt: this.post.updatedAt,
+      visibility: this.post.visibility,
+      categoryId: this.post.categoryId,
+      category: this.post.category
+    });
   }
 
   onSave() {
@@ -85,10 +123,19 @@ export class PostEditComponent implements OnInit {
       category: this.postForm.value.category
     }
 
-    this.data.createPost(savedPost).subscribe(result => {
-      // success adding a new post
-      console.log("Added new post", result);
-    });
+    if (this.isEditing) {
+      this.data.updatePost(this.post.contentId, savedPost).subscribe(result => {
+        // success updating a post
+        console.log("updated post", result);
+        this.router.navigate(['post', this.id]);
+      });
+    } else {
+      this.data.createPost(savedPost).subscribe(result => {
+        // success adding a new post
+        console.log("Added new post", result);
+        this.router.navigate(['post', result.contentId]);
+      });
+    }
   }
 
   onClear() {

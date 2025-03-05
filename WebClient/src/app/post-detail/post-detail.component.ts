@@ -13,6 +13,8 @@ export class PostDetailComponent implements OnInit {
   id: number = 0;
   post: Post | undefined;
 
+  isLoaded: boolean = false;
+
   constructor(private data: DataService,
     private route: ActivatedRoute,
     private router: Router) {
@@ -44,6 +46,7 @@ export class PostDetailComponent implements OnInit {
     ).subscribe(data => {
       console.log(data);
       this.post = data;
+      this.isLoaded = true;
     });
   }
 

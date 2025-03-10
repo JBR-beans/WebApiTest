@@ -43,7 +43,7 @@ export class DataService {
       tap(x => {
         console.log('Fired getAllPosts with the following object');
       }),
-      delay(5000)
+      delay(1000)
     ).subscribe(data => {
       this.posts$.next(data);
     })
@@ -54,7 +54,7 @@ export class DataService {
       tap(x => {
         console.log('Fired getPostById with the following object', x);
       }),
-      delay(5000)
+      delay(1000)
     ).subscribe((data: Post) => { // next
       console.log("getPostById returned success", data)
       this.selectedPost$.next(data);

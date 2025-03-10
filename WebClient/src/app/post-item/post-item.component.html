@@ -4,7 +4,7 @@
   <h5>Updated At: {{ post.updatedAt | date:'fullDate' }}</h5>
   <div class="post-controls btn-group">
     <button class="btn btn-sm btn-danger" (click)="onDelete()">Delete</button><br />
-    <button class="btn btn-sm btn-success" [routerLink]="['/post', post.contentId, 'edit']">Edit</button>
+    <button class="btn btn-sm btn-success" [routerLink]="['/post', 'edit', post.contentId]">Edit</button>
   </div>
   <p>
     {{ post.body }}
